@@ -95,31 +95,4 @@ public class QuoteReactiveControllerIntegrationTest {
                 .verify();
 
     }
-
-    @Test
-    public void deleteRequest() {
-        Quote quote = new Quote("1", "mock-book", "Quote 1");
-
-        Flux<Quote> remainingQuoteFlux = Flux.just(
-                new Quote("2", "mock-book", "Quote 2"),
-                new Quote("3", "mock-book", "Quote 3"),
-                new Quote("4", "mock-book", "Quote 4"));
-
-        given(quoteMongoReactiveRepository.findById("1")).willReturn(Mono.just(quote));
-        given(quoteMongoReactiveRepository.delete(quote)).willReturn(null);
-        given(quoteMongoReactiveRepository.retrieveAllQuotesPaged(PageRequest.of(1, 2)))
-                .willReturn(remainingQuoteFlux.take(2));
-        // when
-        Flux<Quote> receivedFlux = webClient.get().uri("/quotes-delete?page=1&size=2&id=1")
-                .accept(MediaType.TEXT_EVENT_STREAM)
-                .exchange().flatMapMany(response -> response.bodyToFlux(Quote.class));
-
-        // then
-        StepVerifier.create(receivedFlux)
-                .expectNext(new Quote("2", "mock-book", "Quote 2"))
-                .expectNext(new Quote("3", "mock-book", "Quote 3"))
-                .expectComplete()
-                .verify();
-    }
-
 }

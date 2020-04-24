@@ -19,6 +19,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
@@ -90,4 +91,48 @@ public class QuoteBlockingControllerIntegrationTest {
                 Lists.newArrayList(new Quote("1", "mock-book", "Quote 1"),
                         new Quote("2", "mock-book", "Quote 2")));
     }
+
+    @Test
+    public void deleteRequest() {
+        Quote quote = new Quote("1", "mock-book", "Quote 1");
+
+        // given
+        given(quoteMongoBlockingRepository.findById("1")).willReturn(Optional.of(quote));
+        quoteMongoBlockingRepository.delete(quote);
+        given(quoteMongoBlockingRepository.retrieveAllQuotesPaged(PageRequest.of(1, 2)))
+                .willReturn(quoteList.subList(1, 2));
+
+        // when
+        ResponseEntity<List<Quote>> receivedQuoteList = restTemplate.exchange(
+                serverBaseUrl + "/quotes-delete?page=1&size=2&id=1",
+                HttpMethod.GET, null, new ParameterizedTypeReference<List<Quote>>() {
+                });
+
+        // then
+        assertThat(receivedQuoteList.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(receivedQuoteList.getBody()).isEqualTo(
+                Lists.newArrayList(new Quote("2", "mock-book", "Quote 2"),
+                        new Quote("3", "mock-book", "Quote 3")));
+    }
+
+    @Test
+    public void deleteRequestEntityNotFound() {
+        // given
+        given(quoteMongoBlockingRepository.findById("5")).willReturn(Optional.empty());
+        given(quoteMongoBlockingRepository.retrieveAllQuotesPaged(PageRequest.of(1, 2)))
+                .willReturn(quoteList.subList(1, 2));
+
+        // when
+        ResponseEntity<List<Quote>> receivedQuoteList = restTemplate.exchange(
+                serverBaseUrl + "/quotes-delete?page=1&size=2&id=5",
+                HttpMethod.GET, null, new ParameterizedTypeReference<List<Quote>>() {
+                });
+
+        // then
+        assertThat(receivedQuoteList.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(receivedQuoteList.getBody()).isEqualTo(
+                Lists.newArrayList(new Quote("1", "mock-book", "Quote 1"),
+                        new Quote("2", "mock-book", "Quote 2")));
+    }
+
 }

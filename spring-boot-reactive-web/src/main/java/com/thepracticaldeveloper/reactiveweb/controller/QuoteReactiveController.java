@@ -35,14 +35,4 @@ public class QuoteReactiveController {
         return quoteMongoReactiveRepository.retrieveAllQuotesPaged(PageRequest.of(page, size))
                 .delayElements(Duration.ofMillis(DELAY_PER_ITEM_MS));
     }
-
-    @GetMapping("/quotes-delete")
-    public Flux<Quote> deleteQuoteFlux(final @RequestParam(name = "page") int page,
-                                       final @RequestParam(name = "size") int size,
-                                       final @RequestParam(name = "id") int id) {
-        Mono<Quote> quote = quoteMongoReactiveRepository.findById(String.valueOf(id));
-        quoteMongoReactiveRepository.delete(quote.block());
-        return quoteMongoReactiveRepository.retrieveAllQuotesPaged(PageRequest.of(page, size))
-                .delayElements(Duration.ofMillis(DELAY_PER_ITEM_MS));
-    }
 }

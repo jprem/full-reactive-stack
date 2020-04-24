@@ -48,9 +48,9 @@ export class QuotesComponent {
 
   deleteQuote(quote: Quote): void {
     if (this.pagination === true) {
-      this.quotes = this.quoteReactiveService.deleteQuote(this.page, this.size, quote.id);
+      this.quotes = this.quoteBlockingService.deleteQuote(this.page, this.size, quote.id);
     } else {
-      this.quotes = this.quoteReactiveService.deleteQuote(0, this.size, quote.id);
+      this.quotes = this.quoteBlockingService.deleteQuote(this.page, this.size, quote.id);
     }
   }
 }

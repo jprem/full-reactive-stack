@@ -6,6 +6,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import java.util.Optional;
 
 @RestController
 public class QuoteBlockingController {
@@ -30,4 +31,17 @@ public class QuoteBlockingController {
         Thread.sleep(DELAY_PER_ITEM_MS * size);
         return quoteMongoBlockingRepository.retrieveAllQuotesPaged(PageRequest.of(page, size));
     }
+
+    @GetMapping("/quotes-delete")
+    public Iterable<Quote> deleteQuotesBlocking(final @RequestParam(name = "page") int page,
+                                                final @RequestParam(name = "size") int size,
+                                                final @RequestParam(name = "id") int id) throws Exception {
+        Thread.sleep(DELAY_PER_ITEM_MS * size);
+        Optional<Quote> quote = quoteMongoBlockingRepository.findById(String.valueOf(id));
+        if (quote.isPresent()) {
+            quoteMongoBlockingRepository.delete(quote.get());
+        }
+        return quoteMongoBlockingRepository.retrieveAllQuotesPaged(PageRequest.of(page, size));
+    }
+
 }
