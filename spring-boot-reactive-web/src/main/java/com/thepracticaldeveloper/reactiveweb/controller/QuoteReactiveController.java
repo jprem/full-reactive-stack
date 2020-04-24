@@ -34,4 +34,12 @@ public class QuoteReactiveController {
                 .delayElements(Duration.ofMillis(DELAY_PER_ITEM_MS));
     }
 
+    @DeleteMapping("/quotes-delete")
+    public Flux<Quote> deleteQuoteFlux(inal @RequestParam(name = "page") int page,
+                                       final @RequestParam(name = "size") int size,
+                                       final @RequestParam(name = "id") int id) {
+        quoteMongoReactiveRepository.delete(id)
+        return quoteMongoReactiveRepository.retrieveAllQuotesPaged(PageRequest.of(page, size))
+                .delayElements(Duration.ofMillis(DELAY_PER_ITEM_MS));
+    }
 }
