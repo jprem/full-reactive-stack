@@ -47,7 +47,7 @@ export class QuoteReactiveService {
     return Observable.create((observer) => {
       let url = this.url;
       if (page != null) {
-        url = this.urlPaged + '?page=' + page + '&size=' + size + '&id=' + id;
+        url = this.urlDelete + '?page=' + page + '&size=' + size + '&id=' + id;
       }
       let eventSource = new EventSource(url);
       eventSource.onmessage = (event) => {

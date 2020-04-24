@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import java.time.Duration;
 
@@ -35,12 +36,14 @@ public class QuoteReactiveController {
                 .delayElements(Duration.ofMillis(DELAY_PER_ITEM_MS));
     }
 
-    @DeleteMapping("/quotes-delete")
+    @GetMapping("/quotes-delete")
     public Flux<Quote> deleteQuoteFlux(final @RequestParam(name = "page") int page,
                                        final @RequestParam(name = "size") int size,
                                        final @RequestParam(name = "id") int id) {
-        Quote quote = quoteMongoReactiveRepository.findOne(id);
-        quoteMongoReactiveRepository.delete(quote);
+        Mono<Quote> quote = quoteMongoReactiveRepository.findById(String.valueOf(id));
+        if (quote.block() != null) {
+            quoteMongoReactiveRepository.delete(quote.block());
+        }
         return quoteMongoReactiveRepository.retrieveAllQuotesPaged(PageRequest.of(page, size))
                 .delayElements(Duration.ofMillis(DELAY_PER_ITEM_MS));
     }
