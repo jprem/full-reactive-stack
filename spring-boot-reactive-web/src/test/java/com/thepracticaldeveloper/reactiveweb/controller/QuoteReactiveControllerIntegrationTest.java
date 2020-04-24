@@ -14,6 +14,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
 import java.time.Duration;
@@ -99,7 +100,7 @@ public class QuoteReactiveControllerIntegrationTest {
     public void deleteRequest() {
         Quote quote = new Quote("1", "mock-book", "Quote 1");
 
-        given(quoteMongoReactiveRepository.findOne(1)).willReturn(quote);
+        given(quoteMongoReactiveRepository.findById("1")).willReturn(Mono.just(quote));
         given(quoteMongoReactiveRepository.delete(quote)).willReturn(null);
         given(quoteMongoReactiveRepository.retrieveAllQuotesPaged(PageRequest.of(1, 2)))
                 .willReturn(quoteFlux.take(2));

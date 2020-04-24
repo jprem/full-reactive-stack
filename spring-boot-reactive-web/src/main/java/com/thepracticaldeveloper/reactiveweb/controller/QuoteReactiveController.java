@@ -41,9 +41,7 @@ public class QuoteReactiveController {
                                        final @RequestParam(name = "size") int size,
                                        final @RequestParam(name = "id") int id) {
         Mono<Quote> quote = quoteMongoReactiveRepository.findById(String.valueOf(id));
-        if (quote.block() != null) {
-            quoteMongoReactiveRepository.delete(quote.block());
-        }
+        quoteMongoReactiveRepository.delete(quote.block());
         return quoteMongoReactiveRepository.retrieveAllQuotesPaged(PageRequest.of(page, size))
                 .delayElements(Duration.ofMillis(DELAY_PER_ITEM_MS));
     }
