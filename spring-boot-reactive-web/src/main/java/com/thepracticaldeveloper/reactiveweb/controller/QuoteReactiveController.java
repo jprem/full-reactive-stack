@@ -4,6 +4,7 @@ import com.thepracticaldeveloper.reactiveweb.domain.Quote;
 import com.thepracticaldeveloper.reactiveweb.repository.QuoteMongoReactiveRepository;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Flux;
@@ -35,10 +36,11 @@ public class QuoteReactiveController {
     }
 
     @DeleteMapping("/quotes-delete")
-    public Flux<Quote> deleteQuoteFlux(inal @RequestParam(name = "page") int page,
+    public Flux<Quote> deleteQuoteFlux(final @RequestParam(name = "page") int page,
                                        final @RequestParam(name = "size") int size,
                                        final @RequestParam(name = "id") int id) {
-        quoteMongoReactiveRepository.delete(id)
+        Quote quote = quoteMongoReactiveRepository.findOne(id);
+        quoteMongoReactiveRepository.delete(quote);
         return quoteMongoReactiveRepository.retrieveAllQuotesPaged(PageRequest.of(page, size))
                 .delayElements(Duration.ofMillis(DELAY_PER_ITEM_MS));
     }

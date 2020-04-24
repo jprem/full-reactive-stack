@@ -10,4 +10,7 @@ public interface QuoteMongoReactiveRepository extends ReactiveCrudRepository<Quo
 
     @Query("{ id: { $exists: true }}")
     Flux<Quote> retrieveAllQuotesPaged(final Pageable page);
+
+    @Query("{ id: ?0 }")
+    Quote findOne(final int id);
 }

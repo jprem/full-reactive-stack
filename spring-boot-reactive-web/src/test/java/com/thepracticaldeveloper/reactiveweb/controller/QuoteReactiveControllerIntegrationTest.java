@@ -97,7 +97,10 @@ public class QuoteReactiveControllerIntegrationTest {
 
     @Test
     public void deleteRequest() {
-        given(quoteMongoReactiveRepository.delete(1)).willReturn(quoteFlux.take(1));
+        Quote quote = new Quote("1", "mock-book", "Quote 1");
+
+        given(quoteMongoReactiveRepository.findOne(1)).willReturn(quote);
+        given(quoteMongoReactiveRepository.delete(quote)).willReturn(null);
         given(quoteMongoReactiveRepository.retrieveAllQuotesPaged(PageRequest.of(1, 2)))
                 .willReturn(quoteFlux.take(2));
         // when
