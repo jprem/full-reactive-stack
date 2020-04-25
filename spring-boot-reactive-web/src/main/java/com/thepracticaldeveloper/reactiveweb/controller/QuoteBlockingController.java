@@ -32,6 +32,9 @@ public class QuoteBlockingController {
         return quoteMongoBlockingRepository.retrieveAllQuotesPaged(PageRequest.of(page, size));
     }
 
+    // Below combines the delete and get operation to refresh the page
+    // the other alternative is to split the delete to seperate endpoint and front-end calls the delete first
+    // and calls existing get endpoint to refresh the page
     @GetMapping("/quotes-delete")
     public Iterable<Quote> deleteQuotesBlocking(final @RequestParam(name = "page") int page,
                                                 final @RequestParam(name = "size") int size,
