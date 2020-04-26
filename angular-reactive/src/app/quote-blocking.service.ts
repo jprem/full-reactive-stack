@@ -12,6 +12,7 @@ export class QuoteBlockingService {
   url: string = 'http://localhost:8080/quotes-blocking';
   urlPaged: string = 'http://localhost:8080/quotes-blocking-paged';
   urlDelete: string = 'http://localhost:8080/quotes-delete';
+  urlDeleteById: string = 'http://localhost:8080/quote/{id}';
 
   constructor(private http: HttpClient) {}
 
@@ -24,13 +25,23 @@ export class QuoteBlockingService {
     return this.http.get<Array<Quote>>(url);
   }
 
-  deleteQuote(page?: number, size?: number, id?: number): Observable<Array<Quote>> {
+  // Call the delete and get endpoint
+  /*deleteQuote(page?: number, size?: number, id?: number): Observable<Array<Quote>> {
     this.quotes = [];
     let url = this.url;
     if (page != null) {
       url = this.urlDelete + '?page=' + page + '&size=' + size + '&id=' + id;
     }
     return this.http.get<Array<Quote>>(url);
-  }
+  }*/
 
+  // Call the delete endpoint
+  deleteQuote(id?: number): Observable<{}> {
+    this.quotes = [];
+    let url = this.url;
+    if (id != null) {
+      url = this.urlDeleteById.replace('{id}', id.toString());
+    }
+    return this.http.delete(url);
+  }
 }

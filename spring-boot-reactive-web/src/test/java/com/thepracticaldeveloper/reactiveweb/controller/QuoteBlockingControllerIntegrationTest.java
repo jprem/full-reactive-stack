@@ -135,4 +135,38 @@ public class QuoteBlockingControllerIntegrationTest {
                         new Quote("2", "mock-book", "Quote 2")));
     }
 
+    @Test
+    public void deleteQuoteByIdRequest() {
+        Quote quote = new Quote("1", "mock-book", "Quote 1");
+
+        // given
+        given(quoteMongoBlockingRepository.findById("1")).willReturn(Optional.of(quote));
+        quoteMongoBlockingRepository.delete(quote);
+
+        // when
+        ResponseEntity<Long> receivedDeleteResponse = restTemplate.exchange(
+                serverBaseUrl + "/quote/1",
+                HttpMethod.DELETE, null, new ParameterizedTypeReference<Long>() {
+                });
+
+        // then
+        assertThat(receivedDeleteResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(receivedDeleteResponse.getBody()).isEqualTo(1L);
+    }
+
+    @Test
+    public void deleteQuoteByIdRequestEntityNotFound() {
+        // given
+        given(quoteMongoBlockingRepository.findById("5")).willReturn(Optional.empty());
+
+        // when
+        ResponseEntity<Long> receivedDeleteResponse = restTemplate.exchange(
+                serverBaseUrl + "/quote/1",
+                HttpMethod.DELETE, null, new ParameterizedTypeReference<Long>() {
+                });
+
+        // then
+        assertThat(receivedDeleteResponse.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+    }
+
 }

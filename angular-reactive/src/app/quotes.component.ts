@@ -46,11 +46,18 @@ export class QuotesComponent {
     this.selectedQuote = quote;
   }
 
-  deleteQuote(quote: Quote): void {
+  // Call the delete and get endpoint
+  /*deleteQuote(quote: Quote): void {
     if (this.pagination === true) {
       this.quotes = this.quoteBlockingService.deleteQuote(this.page, this.size, quote.id);
     } else {
       this.quotes = this.quoteBlockingService.deleteQuote(this.page, this.size, quote.id);
     }
+  }*/
+
+  // Call the delete endpoint and refresh the page by calling above get quotes
+  deleteQuote(quote: Quote): void {
+    this.quoteBlockingService.deleteQuote(quote.id).subscribe();
+    this.requestQuoteBlocking();
   }
 }
